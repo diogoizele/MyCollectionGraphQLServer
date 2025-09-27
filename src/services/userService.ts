@@ -5,6 +5,7 @@ import {
   type CollectionStats,
   type CategoryEnum,
 } from "../types";
+import { categoryMapping } from "../utils/categoryMapper";
 
 import CollectionService from "./collectionService";
 
@@ -33,17 +34,24 @@ class UserService {
 
     if (!user) return null;
 
+    console.log({
+      ...user,
+      totalItems: collectionSummary.totalItems,
+      averageRating: collectionSummary.averageRating,
+      categorySummary: collectionSummary.categoryPercentages.map((item) => ({
+        category: categoryMapping[item.category],
+        itemCount: item.quantity,
+      })),
+    });
+
     return {
       ...user,
       totalItems: collectionSummary.totalItems,
       averageRating: collectionSummary.averageRating,
-      categorySummary: collectionSummary.categoryPercentages.reduce(
-        (acc, curr) => {
-          acc[curr.category] = curr.quantity;
-          return acc;
-        },
-        {} as Record<CategoryEnum, number>
-      ),
+      categorySummary: collectionSummary.categoryPercentages.map((item) => ({
+        category: categoryMapping[item.category],
+        itemCount: item.quantity,
+      })),
     };
   };
 }
